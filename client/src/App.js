@@ -6,14 +6,16 @@ const App = () => {
   const [savedList, setSavedList] = useState( [] );
 
   const addToSavedList = movie => {
-    setSavedList( [...savedList, movie] );
-  };
+    !savedList.find((item) => item.id === movie.id)
+    ? setSavedList( [...savedList, movie] )
+    : alert(`this movie has already been saved`);
+  }
 
   return (
     <div>
       <SavedList list={savedList} />
       <Route exact path="/"><MovieList /></Route>
-      <Route path="/movies/:movieID"><Movie /></Route>
+      <Route exact path="/movies/:movieID"><Movie addToSavedList={addToSavedList}/></Route>
     </div>
   );
 };
