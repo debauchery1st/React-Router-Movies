@@ -1,40 +1,41 @@
-import React, { useState, useEffect } from 'react';
-import {useParams} from 'react-router-dom';
+import React, { useEffect } from 'react';
+import {useLocation} from 'react-router-dom';
 import axios from 'axios';
 import MovieCard from "./MovieCard";
 
 
 const Movie = (props) => {
-  const params = useParams();
-  const [movie, setMovie] = useState();
+  const location = useLocation(); // this location as String
+  const parr = location.pathname ? location.pathname.split('/'):[]; // this locaiton as Array
+  const movieID = parr.length > 0 ? parr[parr.length-1]:""; // Movie ID parsed from location.pathname
+  const movie = props.movie;  // get state variable
+  const setMovie = props.setMovie; // set state function()
+  const addToSavedList = props.addToSavedList;
+  
   useEffect(() => {
-    const id = params.movieID;
-    // change ^^^ that line and grab the id from the URL
-    // You will NEED to add a dependency array to this effect hook
+    console.log(`MOVIE ID: ${movieID}`)
     axios
-      .get(`http://localhost:5000/api/movies/${id}`)
+      .get(`http://localhost:5000/api/movies/${movieID}`)
       .then(response => {
         setMovie(response.data);
       })
+      .then(
+        console.log("movie details request complete")
+        )
       .catch(error => {
         console.error(error);
       });
-  },[movie]);
-  
-  // Uncomment this only when you have moved on to the stretch goals
-  const saveMovie = () => {
-    const addToSavedList = props.addToSavedList;
-    addToSavedList(movie)
-  }
+      return () => console.log("clean up movie details");
+  },[movieID, setMovie]);
 
-  if (!movie) {
+  if (!props.movie) {
     return <div>Loading movie information...</div>;
   }
 
   return (
     <div className="save-wrapper">
-      <MovieCard title={movie.title} director={movie.director} metascore={movie.metascore} stars={movie.stars} />
-    <div className="save-button" onClick={() => saveMovie()}>Save</div>
+      <MovieCard title={props.movie.title} director={props.movie.director} metascore={props.movie.metascore} stars={props.movie.stars} />
+    <div className="save-button" onClick={() => addToSavedList(movie)}>Save</div>
     </div>
   );
 }

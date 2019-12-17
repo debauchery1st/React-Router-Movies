@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {Link} from 'react-router-dom';
+import {NavLink} from 'react-router-dom';
 import axios from 'axios';
 import MovieCard from './MovieCard';
 
@@ -7,7 +7,7 @@ const MovieList = props => {
   const [movies, setMovies] = useState([])
   useEffect(() => {
     const getMovies = () => {
-      axios
+      new axios
         .get('http://localhost:5000/api/movies')
         .then(response => {
           setMovies(response.data);
@@ -23,9 +23,9 @@ const MovieList = props => {
   return (
     <div className="movie-list">
       {movies.map(movie => (
-        <Link to={`/movies/${movie.id}`}>
-          <MovieDetails key={movie.id} movie={movie} />
-        </Link>
+        <NavLink key={ `key-${movie.id}-${Math.floor(Math.random()*255)}` } to={`/movies/${movie.id}`}>
+          <MovieDetails key={`details-${movie.id}-${Math.floor(Math.random()*255)}`} movie={movie} />
+        </NavLink>
       ))}
     </div>
   );
@@ -34,7 +34,7 @@ const MovieList = props => {
 function MovieDetails({ movie }) {
   // const { title, director, metascore, stars } = movie;
   return (
-    <MovieCard title={movie.title} director={movie.director} metascore={movie.metascore} stars={movie.stars} />
+    <MovieCard key={`card-${movie.title}-${Math.floor(Math.random()*255)}`} title={movie.title} director={movie.director} metascore={movie.metascore} stars={movie.stars} />
   );
 }
 
