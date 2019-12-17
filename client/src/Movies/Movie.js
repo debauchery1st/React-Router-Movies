@@ -3,6 +3,7 @@ import {useLocation} from 'react-router-dom';
 import axios from 'axios';
 import MovieCard from "./MovieCard";
 
+const DEBUG_MESSAGE = false;
 
 const Movie = (props) => {
   const location = useLocation(); // this location as String
@@ -13,19 +14,20 @@ const Movie = (props) => {
   const addToSavedList = props.addToSavedList;
   
   useEffect(() => {
-    console.log(`MOVIE ID: ${movieID}`)
+    if (DEBUG_MESSAGE) console.log(`MOVIE ID: ${movieID}`);
+
     axios
       .get(`http://localhost:5000/api/movies/${movieID}`)
       .then(response => {
         setMovie(response.data);
       })
       .then(
-        console.log("movie details request complete")
+        (DEBUG_MESSAGE) ? console.log("movie details request complete"):true
         )
       .catch(error => {
         console.error(error);
       });
-      return () => console.log("clean up movie details");
+      return () => (DEBUG_MESSAGE) ? console.log("clean up movie details"):true;
   },[movieID, setMovie]);
 
   if (!props.movie) {
