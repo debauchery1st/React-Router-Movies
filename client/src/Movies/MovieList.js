@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {NavLink} from 'react-router-dom';
 import axios from 'axios';
-import MovieCard from './MovieCard';
+import {MovieCard, MoviesContainer} from './MovieCard';
 
 const MovieList = props => {
   const [movies, setMovies] = useState([])
@@ -21,13 +21,14 @@ const MovieList = props => {
   }, []);
   
   return (
-    <div className="movie-list">
+    <MoviesContainer className="movie-list">
+      
       {movies.map(movie => (
         <NavLink key={ `key-${movie.id}-${Math.floor(Math.random()*255)}` } to={`/movies/${movie.id}`}>
           <MovieDetails key={`details-${movie.id}-${Math.floor(Math.random()*255)}`} movie={movie} />
         </NavLink>
       ))}
-    </div>
+    </MoviesContainer>
   );
 }
 
