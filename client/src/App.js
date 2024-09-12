@@ -1,18 +1,22 @@
 import React, { useState } from 'react';
-
-import SavedList from './Movies/SavedList';
+import {Route, useHistory } from 'react-router-dom';
+import {Movie, MovieList, SavedList} from './Movies';
 
 const App = () => {
   const [savedList, setSavedList] = useState( [] );
+  const [movie, setMovie] = useState();
 
   const addToSavedList = movie => {
-    setSavedList( [...savedList, movie] );
-  };
+    !savedList.find((item) => item.id === movie.id)
+    ? setSavedList( [...savedList, movie] )
+    : alert(`this movie has already been saved`);
+  }
 
   return (
     <div>
       <SavedList list={savedList} />
-      <div>Replace this Div with your Routes</div>
+      <Route exact path="/"><MovieList /></Route>
+      <Route path="/movies/:movieID"><Movie history={useHistory()} addToSavedList={addToSavedList} movie={movie} setMovie={setMovie}/></Route>
     </div>
   );
 };

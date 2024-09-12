@@ -1,55 +1,43 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import {useLocation} from 'react-router-dom';
 import axios from 'axios';
+import {MovieCard} from "./MovieCard";
+
+const DEBUG_MESSAGE = false;
 
 const Movie = (props) => {
-  const [movie, setMovie] = useState();
- 
-  useEffect(() => {
-    const id = 1;
-    // change ^^^ that line and grab the id from the URL
-    // You will NEED to add a dependency array to this effect hook
-
-       axios
-        .get(`http://localhost:5000/api/movies/${id}`)
-        .then(response => {
-          setMovie(response.data);
-        })
-        .catch(error => {
-          console.error(error);
-        });
-
-  },[]);
+  const location = useLocation(); // this location as String
+  const parr = location.pathname ? location.pathname.split('/'):[]; // this locaiton as Array
+  const movieID = parr.length > 0 ? parr[parr.length-1]:""; // Movie ID parsed from location.pathname
+  const movie = props.movie;  // get state variable
+  const setMovie = props.setMovie; // set state function()
+  const addToSavedList = props.addToSavedList;
   
-  // Uncomment this only when you have moved on to the stretch goals
-  // const saveMovie = () => {
-  //   const addToSavedList = props.addToSavedList;
-  //   addToSavedList(movie)
-  // }
+  useEffect(() => {
+    if (DEBUG_MESSAGE) console.log(`MOVIE ID: ${movieID}`);
 
-  if (!movie) {
+    axios
+      .get(`http://localhost:5000/api/movies/${movieID}`)
+      .then(response => {
+        setMovie(response.data);
+      })
+      .then(
+        (DEBUG_MESSAGE) ? console.log("movie details request complete"):true
+        )
+      .catch(error => {
+        console.error(error);
+      });
+      return () => (DEBUG_MESSAGE) ? console.log("clean up movie details"):true;
+  },[movieID, setMovie]);
+
+  if (!props.movie) {
     return <div>Loading movie information...</div>;
   }
 
-  const { title, director, metascore, stars } = movie;
   return (
     <div className="save-wrapper">
-      <div className="movie-card">
-        <h2>{title}</h2>
-        <div className="movie-director">
-          Director: <em>{director}</em>
-        </div>
-        <div className="movie-metascore">
-          Metascore: <strong>{metascore}</strong>
-        </div>
-        <h3>Actors</h3>
-
-        {stars.map(star => (
-          <div key={star} className="movie-star">
-            {star}
-          </div>
-        ))}
-      </div>
-      <div className="save-button">Save</div>
+      <MovieCard title={props.movie.title} director={props.movie.director} metascore={props.movie.metascore} stars={props.movie.stars} />
+    <div className="save-button" onClick={() => addToSavedList(movie)}>Save</div>
     </div>
   );
 }
